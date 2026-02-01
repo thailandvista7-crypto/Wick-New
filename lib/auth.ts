@@ -1,6 +1,5 @@
-import { NextRequest } from 'next/server';
-import { getServerSession } from "next-auth/next"; // CRITICAL: Fixes Vercel Error
-import { authOptions } from "./auth-config"; // Path to your NextAuth settings
+// lib/auth.ts
+import { auth } from "@/auth"; // Ensure this points to your auth.ts config file
 
 // Keep your interface for typing
 export interface TokenPayload {
@@ -11,16 +10,18 @@ export interface TokenPayload {
 
 /**
  * HELPER: Use this in your Route Handlers to get the user
- * This replaces your manual cookie/JWT check with NextAuth's secure check.
+ * In v5, auth() works in API Routes, Server Components, and Actions.
  */
 export async function getAuthUser() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   
   if (!session || !session.user) return null;
 
+  // v5 typically attaches custom fields directly to the user object 
+  // if you've configured your callbacks correctly in auth.ts
   return {
-    userId: (session.user as any).id,
+    userId: session.user.id,
     email: session.user.email,
-    role: (session.user as any).role,
+    role: (session.user as any).role, // Casting if types aren't augmented yet
   } as TokenPayload;
 }
