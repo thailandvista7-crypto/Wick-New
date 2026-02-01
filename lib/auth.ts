@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getServerSession } from "next-auth/next"; // CRITICAL: Fixes Vercel Error
-import { authOptions } from "./auth.config"; // Path to your NextAuth settings
+import { authOptions } from "./auth-config"; // Path to your NextAuth settings
 
 // Keep your interface for typing
 export interface TokenPayload {
