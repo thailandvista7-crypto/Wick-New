@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth"; // Import the v5 auth helper
+import { auth } from "@/auth.ts"; // Import the v5 auth helper
 
 export async function GET() {
   try {
