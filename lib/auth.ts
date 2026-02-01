@@ -1,37 +1,26 @@
 import { NextRequest } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { getServerSession } from "next-auth/next"; // CRITICAL: Fixes Vercel Error
+import { authOptions } from "./auth.config"; // Path to your NextAuth settings
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
-if (!JWT_SECRET) {
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('JWT_SECRET environment variable is required in production');
-  }
-  console.warn('WARNING: JWT_SECRET not set. Using default secret. This is insecure and should only be used in development.');
-}
-
-const SECRET = JWT_SECRET || 'dev-secret-key-change-in-production';
-
+// Keep your interface for typing
 export interface TokenPayload {
   userId: string;
   email: string;
   role: string;
 }
 
-export function generateToken(payload: TokenPayload): string {
-  return jwt.sign(payload, SECRET, { expiresIn: '7d' });
-}
+/**
+ * HELPER: Use this in your Route Handlers to get the user
+ * This replaces your manual cookie/JWT check with NextAuth's secure check.
+ */
+export async function getAuthUser() {
+  const session = await getServerSession(authOptions);
+  
+  if (!session || !session.user) return null;
 
-export function verifyToken(token: string): TokenPayload | null {
-  try {
-    return jwt.verify(token, SECRET) as TokenPayload;
-  } catch {
-    return null;
-  }
-}
-
-export function getAuthUser(request: NextRequest): TokenPayload | null {
-  const token = request.cookies.get('auth-token')?.value;
-  if (!token) return null;
-  return verifyToken(token);
+  return {
+    userId: (session.user as any).id,
+    email: session.user.email,
+    role: (session.user as any).role,
+  } as TokenPayload;
 }
