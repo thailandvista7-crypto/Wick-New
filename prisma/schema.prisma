@@ -1,0 +1,223 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String?   // Optional for OAuth users
+  name          String?
+  role          String    @default("customer") // "customer" or "admin"
+  image         String?   // Profile image URL
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  orders        Order[]
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Product {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  category        String   // "soap" or "candle"
+  shortDesc       String
+  longDesc        String
+  ingredients     String
+  price           Float
+  comparePrice    Float?
+  sku             String   @unique
+  stock           Int      @default(0)
+  images          String   // JSON array of image URLs stored as string
+  seoTitle        String?
+  seoDescription  String?
+  featured        Boolean  @default(false)
+  usageInstructions String? // Usage & care instructions
+  safetyNotice    String?  // Safety & sensitivity notice
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  orderItems      OrderItem[]
+  reviews         Review[]
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String?
+  email           String
+  name            String
+  address         String
+  city            String
+  state           String
+  zip             String
+  country         String      @default("US")
+  phone           String?
+  status          String      @default("pending") // pending, processing, shipped, delivered, cancelled
+  total           Float
+  subtotal        Float
+  shipping        Float
+  tax             Float?
+  stripeSessionId String?     @unique
+  stripePaymentId String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  items           OrderItem[]
+  user            User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+model Coupon {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  type        String   // "percentage" or "fixed"
+  value       Float
+  minPurchase Float?
+  maxDiscount Float?
+  expiresAt   DateTime?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  name      String
+  email     String?
+  rating    Int      // 1-5 stars
+  comment   String
+  verified  Boolean  @default(false) // Whether from verified purchase
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model ShippingRule {
+  id              String   @id @default(cuid())
+  name            String
+  type            String   // "free_threshold", "flat_rate", "weight_based", "zone_based"
+  value           Float?   // Threshold amount or flat rate
+  freeThreshold   Float?   // Free shipping threshold
+  flatRate        Float?   // Flat shipping rate
+  weightBased     String?  // JSON string for weight-based rules
+  zones           String?  // JSON string for zone-based rules
+  active          Boolean  @default(true)
+  priority        Int      @default(0) // Higher priority rules checked first
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model CheckoutSetting {
+  id              String   @id @default(cuid())
+  key             String   @unique
+  value           String   // JSON string for complex values
+  description     String?
+  updatedAt       DateTime @updatedAt
+}
+
+model DesignSetting {
+  id              String   @id @default(cuid())
+  key             String   @unique
+  value           String   // JSON string for complex values
+  description     String?
+  updatedAt       DateTime @updatedAt
+}
+
+model HomepageContent {
+  id              String   @id @default(cuid())
+  section         String   @unique // "hero", "featured", "testimonials", etc.
+  title           String?
+  subtitle        String?
+  content         String?  // Rich text content
+  ctaText         String?
+  ctaLink         String?
+  enabled         Boolean  @default(true)
+  order           Int      @default(0)
+  metadata        String?  // JSON string for additional settings
+  updatedAt       DateTime @updatedAt
+}
+
+model CarouselSlide {
+  id              String   @id @default(cuid())
+  imageUrl        String
+  caption         String?
+  ctaText         String?
+  ctaLink         String?
+  order           Int      @default(0)
+  enabled         Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model CarouselSetting {
+  id              String   @id @default(cuid())
+  key             String   @unique
+  value           String   // JSON string for settings (autoplay, speed, etc.)
+  updatedAt       DateTime @updatedAt
+}
+
+model StaticContent {
+  id              String   @id @default(cuid())
+  key             String   @unique // "about", "footer", "privacy", etc.
+  title           String?
+  content         String   // Rich text content
+  updatedAt       DateTime @updatedAt
+}
+
+model AnimationSetting {
+  id              String   @id @default(cuid())
+  key             String   @unique
+  value           String   // JSON string for animation preferences
+  updatedAt       DateTime @updatedAt
+}
