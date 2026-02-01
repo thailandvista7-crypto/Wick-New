@@ -19,7 +19,6 @@ export async function getStaticContent(key: string) {
 
 /**
  * Get multiple static content items by keys
- * Returns a map of key -> content
  */
 export async function getMultipleStaticContent(keys: string[]) {
   try {
@@ -29,12 +28,12 @@ export async function getMultipleStaticContent(keys: string[]) {
       },
     });
 
-    const contentMap = new Map<string, (typeof contents)[0] | null>();
+    const contentMap = new Map<string, (typeof contents)[number] | null>();
 
-    keys.forEach((key) => {
-      const content = contents.find((c) => c.key === key) || null;
+    for (const key of keys) {
+      const content = contents.find((c) => c.key === key) ?? null;
       contentMap.set(key, content);
-    });
+    }
 
     return contentMap;
   } catch (error) {
@@ -51,13 +50,7 @@ export function renderCMSContent(
   fallback: React.ReactNode
 ): React.ReactNode {
   if (content?.content) {
-    return (
-      <div
-        dangerouslySetInnerHTML={{
-          __html: content.content,
-        }}
-      />
-    );
+    return <div dangerouslySetInnerHTML={{ __html: content.content }} />;
   }
   return fallback;
 }
