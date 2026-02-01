@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 // Use next-auth/next for the server-side function
 import { getServerSession } from "next-auth/next"; 
-// This must point to your auth.config file
-import { authOptions } from "@/lib/auth.config"; 
+// This must point to your auth-config file
+import { authOptions } from "@/lib/auth-config"; 
 import { prisma } from "@/lib/prisma"; 
 
 export async function GET() {
