@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 
@@ -24,26 +24,13 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
     )
   );
 
-  if (validImages.length === 0) {
-    return (
-      <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-soft">
-        <div className="w-full h-full flex items-center justify-center text-olive-600">
-          No images available
-        </div>
-      </div>
-    );
-  }
-
-  const currentImage = validImages[selectedIndex];
-  const isDataUrl = currentImage.startsWith('data:');
-
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     setSelectedIndex((prev) => (prev > 0 ? prev - 1 : validImages.length - 1));
-  };
+  }, [validImages.length]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     setSelectedIndex((prev) => (prev < validImages.length - 1 ? prev + 1 : 0));
-  };
+  }, [validImages.length]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.targetTouches[0].clientX);
@@ -76,7 +63,20 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [handleNext, handlePrevious]);
+
+  if (validImages.length === 0) {
+    return (
+      <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-soft">
+        <div className="w-full h-full flex items-center justify-center text-olive-600">
+          No images available
+        </div>
+      </div>
+    );
+  }
+
+  const currentImage = validImages[selectedIndex];
+  const isDataUrl = currentImage?.startsWith('data:');
 
   return (
     <div className="space-y-4">

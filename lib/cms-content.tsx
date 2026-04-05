@@ -12,7 +12,7 @@ export async function getStaticContent(key: string) {
     });
     return content;
   } catch (error) {
-    console.error(Error fetching static content for key "${key}":, error);
+    console.error(`Error fetching static content for key "${key}":`, error);
     return null;
   }
 }
