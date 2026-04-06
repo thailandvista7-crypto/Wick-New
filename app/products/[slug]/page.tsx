@@ -10,15 +10,10 @@ import RelatedProducts from '@/components/products/RelatedProducts';
 import ProductInfoClient from '@/components/products/ProductInfoClient';
 
 export async function generateStaticParams() {
-  try {
-    const products = await prisma.product.findMany({
-      select: { slug: true },
-    });
-    return products.map((product) => ({ slug: product.slug }));
-  } catch (error) {
-    console.error('Failed to fetch products for static generation:', error);
-    return [];
-  }
+  const products = await prisma.product.findMany({
+    select: { slug: true },
+  });
+  return products.map((product) => ({ slug: product.slug }));
 }
 
 export async function generateMetadata({

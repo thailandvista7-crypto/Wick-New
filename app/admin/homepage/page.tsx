@@ -235,16 +235,16 @@ export default function AdminHomepagePage() {
                     </label>
                     <input
                       type="text"
-                      value={section.section}
+                      value={editingSection?.section || section.section}
                       onChange={(e) =>
-                        setEditingSection({ ...editingSection, section: e.target.value })
+                        setEditingSection(editingSection ? { ...editingSection, section: e.target.value } : null)
                       }
                       className="w-full px-4 py-2 border border-olive-300 rounded-lg bg-white text-olive-900"
                       placeholder="hero, featured, testimonials"
-                      disabled={!!editingSection.id}
+                      disabled={!!editingSection?.id}
                     />
                     <p className="text-xs text-olive-500 mt-1">
-                      {editingSection.id
+                      {editingSection?.id
                         ? 'Key cannot be changed after creation'
                         : 'Unique identifier for this section'}
                     </p>
@@ -254,9 +254,9 @@ export default function AdminHomepagePage() {
                       <label className="block text-olive-700 font-medium mb-2">Title</label>
                       <input
                         type="text"
-                        value={editingSection.title || ''}
+                        value={editingSection?.title || ''}
                         onChange={(e) =>
-                          setEditingSection({ ...editingSection, title: e.target.value })
+                          setEditingSection(editingSection ? { ...editingSection, title: e.target.value } : null)
                         }
                         className="w-full px-4 py-2 border border-olive-300 rounded-lg bg-white text-olive-900"
                         placeholder="Section title"
@@ -266,9 +266,9 @@ export default function AdminHomepagePage() {
                       <label className="block text-olive-700 font-medium mb-2">Subtitle</label>
                       <input
                         type="text"
-                        value={editingSection.subtitle || ''}
+                        value={editingSection?.subtitle || ''}
                         onChange={(e) =>
-                          setEditingSection({ ...editingSection, subtitle: e.target.value })
+                          setEditingSection(editingSection ? { ...editingSection, subtitle: e.target.value } : null)
                         }
                         className="w-full px-4 py-2 border border-olive-300 rounded-lg bg-white text-olive-900"
                         placeholder="Section subtitle"
@@ -278,9 +278,9 @@ export default function AdminHomepagePage() {
                   <div>
                     <label className="block text-olive-700 font-medium mb-2">Content (HTML)</label>
                     <textarea
-                      value={editingSection.content || ''}
+                      value={editingSection?.content || ''}
                       onChange={(e) =>
-                        setEditingSection({ ...editingSection, content: e.target.value })
+                        setEditingSection(editingSection ? { ...editingSection, content: e.target.value } : null)
                       }
                       rows={8}
                       className="w-full px-4 py-2 border border-olive-300 rounded-lg bg-white text-olive-900"
@@ -295,9 +295,9 @@ export default function AdminHomepagePage() {
                       <label className="block text-olive-700 font-medium mb-2">CTA Text</label>
                       <input
                         type="text"
-                        value={editingSection.ctaText || ''}
+                        value={editingSection?.ctaText || ''}
                         onChange={(e) =>
-                          setEditingSection({ ...editingSection, ctaText: e.target.value })
+                          setEditingSection(editingSection ? { ...editingSection, ctaText: e.target.value } : null)
                         }
                         className="w-full px-4 py-2 border border-olive-300 rounded-lg bg-white text-olive-900"
                         placeholder="Button text"
@@ -307,9 +307,9 @@ export default function AdminHomepagePage() {
                       <label className="block text-olive-700 font-medium mb-2">CTA Link</label>
                       <input
                         type="text"
-                        value={editingSection.ctaLink || ''}
+                        value={editingSection?.ctaLink || ''}
                         onChange={(e) =>
-                          setEditingSection({ ...editingSection, ctaLink: e.target.value })
+                          setEditingSection(editingSection ? { ...editingSection, ctaLink: e.target.value } : null)
                         }
                         className="w-full px-4 py-2 border border-olive-300 rounded-lg bg-white text-olive-900"
                         placeholder="/shop or /about"
@@ -320,9 +320,9 @@ export default function AdminHomepagePage() {
                     <label className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        checked={editingSection.enabled}
+                        checked={editingSection?.enabled}
                         onChange={(e) =>
-                          setEditingSection({ ...editingSection, enabled: e.target.checked })
+                          setEditingSection(editingSection ? { ...editingSection, enabled: e.target.checked } : null)
                         }
                         className="w-4 h-4 text-olive-700"
                       />

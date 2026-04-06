@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       where: { email },
     });
 
-    if (!user || user.role !== 'admin') {
+    if (!user || !user.password || user.role !== 'admin') {
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }

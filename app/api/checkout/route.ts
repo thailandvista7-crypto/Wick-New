@@ -55,12 +55,24 @@ export async function POST(request: NextRequest) {
     // Create line items for Stripe
     const lineItems = items.map((item) => {
       const product = products.find((p) => p.id === item.productId);
+
+      let parsedImages: string[] = [];
+      if (product?.images) {
+        try {
+          parsedImages = JSON.parse(product.images as string);
+        } catch (e) {
+          parsedImages = [product.images as string];
+        }
+      } else if (item.image) {
+        parsedImages = [item.image];
+      }
+
       return {
         price_data: {
           currency: 'usd',
           product_data: {
             name: product?.name || item.name,
-            images: product?.images || [item.image],
+            images: parsedImages,
             metadata: {
               productId: item.productId, // Store product ID in metadata
             },
@@ -69,7 +81,7 @@ export async function POST(request: NextRequest) {
         },
         quantity: item.quantity,
       };
-    });
+    }) as any[];
 
     // Calculate shipping (free if subtotal >= $60)
     const subtotal = items.reduce((sum: number, item) => {
@@ -87,7 +99,7 @@ export async function POST(request: NextRequest) {
           currency: 'usd',
           product_data: {
             name: 'Shipping',
-          },
+          } as any,
           unit_amount: Math.round(shipping * 100),
         },
         quantity: 1,
