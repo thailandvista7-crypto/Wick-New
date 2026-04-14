@@ -21,10 +21,15 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const featuredProducts = await prisma.product.findMany({
-    where: { featured: true },
-    take: 4,
-  });
+  let featuredProducts: any[] = [];
+  try {
+    featuredProducts = await prisma.product.findMany({
+      where: { featured: true },
+      take: 4,
+    });
+  } catch (error) {
+    console.error('Failed to fetch featured products for static generation:', error);
+  }
 
   return (
     <>

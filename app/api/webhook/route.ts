@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       // Calculate totals
       const subtotal = lineItems.data
         .filter((item) => {
-          const price = item.price;
+          const price = item.price as any;
           if (typeof price === 'string') return true; // Expand not used, skip
           const productName = price?.product_data?.name;
           return productName !== 'Shipping';
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
         .reduce((sum, item) => sum + (item.amount_total || 0), 0) / 100;
 
       const shippingItem = lineItems.data.find((item) => {
-        const price = item.price;
+        const price = item.price as any;
         if (typeof price === 'string') return false;
         const productName = price?.product_data?.name;
         return productName === 'Shipping';
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
 
       // Create order items and update stock
       for (const item of lineItems.data) {
-        const price = item.price;
+        const price = item.price as any;
         if (typeof price === 'string') continue; // Skip if price is just an ID string
         
         const productName = price?.product_data?.name;

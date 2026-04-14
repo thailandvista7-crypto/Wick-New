@@ -5,9 +5,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wickandlather.com';
 
   // Get all products
-  const products = await prisma.product.findMany({
-    select: { slug: true, updatedAt: true },
-  });
+  let products: any[] = [];
+  try {
+    products = await prisma.product.findMany({
+      select: { slug: true, updatedAt: true },
+    });
+  } catch (error) {
+    console.error('Failed to fetch products for sitemap:', error);
+  }
 
   // Static pages
   const staticPages = [
